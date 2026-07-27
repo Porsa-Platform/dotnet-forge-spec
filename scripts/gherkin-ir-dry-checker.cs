@@ -1,6 +1,7 @@
 #!/usr/bin/dotnet-run
 #:sdk Microsoft.NET.Sdk
-#:property TargetFramework net10.0
+#:property TargetFramework=net10.0
+#:property PublishAot=false
 
 // gherkin-ir-dry-checker — reads a parser-produced JSON IR and reports
 // repeated, near-duplicate, and possible-synonym step text so agents can

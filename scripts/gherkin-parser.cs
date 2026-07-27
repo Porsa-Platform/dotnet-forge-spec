@@ -1,6 +1,7 @@
 #!/usr/bin/dotnet-run
 #:sdk Microsoft.NET.Sdk
-#:property TargetFramework net10.0
+#:property TargetFramework=net10.0
+#:property PublishAot=false
 
 // gherkin-parser — converts a Gherkin feature file into the canonical JSON IR.
 //
