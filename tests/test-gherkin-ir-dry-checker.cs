@@ -4,7 +4,7 @@
 #:property PublishAot=false
 
 // Tests for scripts/gherkin-ir-dry-checker.cs
-// Usage: dotnet run tests/test-gherkin-ir-dry-checker.cs --
+// Usage: dotnet tests/test-gherkin-ir-dry-checker.cs --
 
 using System.Diagnostics;
 using System.Text.Json;

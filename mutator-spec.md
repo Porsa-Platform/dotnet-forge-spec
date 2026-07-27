@@ -48,7 +48,7 @@ override the metadata value for debugging or unusual project layouts.
 ## Mutator Command
 
 ```text
-dotnet run scripts/gherkin-mutator.cs -- [options]
+dotnet scripts/gherkin-mutator.cs -- [options]
 ```
 
 Options:

@@ -17,7 +17,7 @@ The parser and JSON IR are specified in [parser-spec.md](parser-spec.md).
 ## Command
 
 ```text
-dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+dotnet scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
 ```
 
 The command accepts exactly two positional arguments:

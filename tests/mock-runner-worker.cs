@@ -7,7 +7,7 @@
 // Reads newline-delimited JSON job requests from stdin, responds over stdout.
 // Returns test_failure for m1, test_success for m2, infrastructure_error for
 // requests with "error" in the id, and test_success for everything else.
-// Usage: dotnet run scripts/mock-runner-worker.cs --
+// Usage: dotnet scripts/mock-runner-worker.cs --
 
 using System.Text.Json;
 

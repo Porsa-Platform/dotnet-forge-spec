@@ -4,7 +4,7 @@
 #:property PublishAot=false
 
 // Tests for scripts/gherkin-mutator.cs
-// Usage: dotnet run tests/test-gherkin-mutator.cs --
+// Usage: dotnet tests/test-gherkin-mutator.cs --
 
 using System.Diagnostics;
 using System.Text.Json.Nodes;
@@ -182,7 +182,7 @@ static (int ExitCode, string Stdout) RunMutator(string featureContent, params st
         File.WriteAllText(featurePath, featureContent);
         var args = new List<string>
         {
-            "--runner-worker", $"dotnet run -- {workerPath} --",
+            "--runner-worker", $"dotnet -- {workerPath} --",
             "--status-interval", "0",
             "--feature", featurePath
         };

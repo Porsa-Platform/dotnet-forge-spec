@@ -8,7 +8,7 @@
 // tests detect the changed specification data.
 //
 // Usage:
-//   dotnet run scripts/gherkin-mutator.cs -- [options]
+//   dotnet scripts/gherkin-mutator.cs -- [options]
 //
 // Required:
 //   --runner-worker <command>   persistent runner adapter command

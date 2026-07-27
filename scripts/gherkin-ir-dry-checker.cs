@@ -8,7 +8,7 @@
 // normalise and prune Gherkin feature files.
 //
 // Usage:
-//   dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+//   dotnet scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
 //
 // Exit codes:
 //   0  report generation succeeded

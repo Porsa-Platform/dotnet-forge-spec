@@ -12,7 +12,7 @@ mutator. The script uses .NET 10 file-based app capabilities.
 The parser accepts exactly two positional arguments:
 
 ```text
-dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
+dotnet scripts/gherkin-parser.cs -- <feature-file> <json-output>
 ```
 
 Exit codes:

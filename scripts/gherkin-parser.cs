@@ -6,7 +6,7 @@
 // gherkin-parser — converts a Gherkin feature file into the canonical JSON IR.
 //
 // Usage:
-//   dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
+//   dotnet scripts/gherkin-parser.cs -- <feature-file> <json-output>
 //
 // Exit codes:
 //   0  parse succeeded and JSON IR was written

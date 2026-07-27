@@ -4,7 +4,7 @@
 #:property PublishAot=false
 
 // Tests for scripts/gherkin-parser.cs
-// Usage: dotnet run tests/test-gherkin-parser.cs --
+// Usage: dotnet tests/test-gherkin-parser.cs --
 
 using System.Diagnostics;
 using System.Text.Json.Nodes;

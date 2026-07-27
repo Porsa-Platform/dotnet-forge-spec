@@ -65,9 +65,9 @@ Portable scripts in this repository:
    and error results.
 
 ```text
-dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
-dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
-dotnet run scripts/gherkin-mutator.cs -- --runner-worker "<command>" [options]
+dotnet scripts/gherkin-parser.cs -- <feature-file> <json-output>
+dotnet scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+dotnet scripts/gherkin-mutator.cs -- --runner-worker "<command>" [options]
 ```
 
 Project-specific components created by agents as needed:
@@ -101,10 +101,10 @@ Read the specs in this order:
 A conforming setup should prefer these command shapes:
 
 ```text
-dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
-dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+dotnet scripts/gherkin-parser.cs -- <feature-file> <json-output>
+dotnet scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
 acceptance-entrypoint-generator <json-ir> <generated-test-output>
-dotnet run scripts/gherkin-mutator.cs -- [options]
+dotnet scripts/gherkin-mutator.cs -- [options]
 ```
 
 Common generated paths are:
@@ -130,8 +130,8 @@ Run it after parsing newly written or changed feature files and before
 generating acceptance tests:
 
 ```text
-dotnet run scripts/gherkin-parser.cs -- features/example.feature build/acceptance/ir/example.json
-dotnet run scripts/gherkin-ir-dry-checker.cs -- build/acceptance/ir/example.json build/acceptance/dry/example.json
+dotnet scripts/gherkin-parser.cs -- features/example.feature build/acceptance/ir/example.json
+dotnet scripts/gherkin-ir-dry-checker.cs -- build/acceptance/ir/example.json build/acceptance/dry/example.json
 ```
 
 The checker does not rewrite feature files, IR, generated tests, runtimes, or
