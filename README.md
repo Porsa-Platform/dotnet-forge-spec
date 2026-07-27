@@ -1,1 +1,176 @@
 # dotnet-forge-spec
+
+## Purpose
+
+This repository specifies a portable acceptance-test pipeline that agents can
+install in a project. The pipeline turns Gherkin feature files into JSON IR,
+generates executable acceptance test entry points, runs those tests, and uses
+acceptance mutation to check whether example data is actually connected to the
+application under test.
+
+All pipeline tools are rewritten as C# scripts using .NET 10's file-based app
+capability (top-level statements, no solution/project files). Other components
+are project-dependent and are written by the agents responsible for installing
+and maintaining acceptance testing in the target project.
+
+Acceptance mutation means mutating Gherkin example values in the
+specification-derived JSON IR. It does not mean conventional mutation testing of
+application source code.
+
+The specification is intentionally implementation-language and project neutral.
+
+## Pipeline
+
+Normal acceptance run:
+
+```text
+feature file
+  -> gherkin parser
+  -> JSON IR
+  -> optional IR-DRY checker
+  -> acceptance entrypoint generator
+  -> generated test entry points
+  -> project test runner
+```
+
+Acceptance mutation run:
+
+```text
+feature file
+  -> gherkin parser
+  -> base JSON IR
+  -> acceptance entrypoint generator
+  -> reusable generated test entry points
+  -> gherkin mutator
+  -> runner adapter evaluates mutated IR
+  -> mutation report
+```
+
+The normal run proves that the project satisfies the feature. The mutation run
+checks whether the acceptance tests fail when important example values change.
+
+## Component Map
+
+Portable scripts in this repository:
+
+1. `scripts/gherkin-parser.cs`: reads the supported Gherkin subset and writes
+   JSON IR.
+2. JSON IR reader/writer support: loads and stores the canonical feature
+   representation.
+3. `scripts/gherkin-ir-dry-checker.cs`: reads one JSON IR file and reports
+   repeated, near-duplicate, and possible-synonym step text so agents can
+   normalize and prune feature-file Gherkin.
+4. `scripts/gherkin-mutator.cs`: builds deterministic example-value mutations,
+   runs them through a persistent runner worker, and reports killed, survived,
+   and error results.
+
+```text
+dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
+dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+dotnet run scripts/gherkin-mutator.cs -- --runner-worker "<command>" [options]
+```
+
+Project-specific components created by agents as needed:
+
+1. Acceptance entrypoint generator: creates executable test entry points from
+   JSON IR.
+2. Acceptance runtime: expands scenario executions and dispatches steps.
+3. Project step handlers: connect step text to project behavior and assertions.
+4. Runner adapter: runs generated tests against a supplied JSON IR and reports
+   test success, test failure, or infrastructure error.
+5. Convenience scripts: provide stable normal acceptance and mutation commands.
+
+## Specifications
+
+Read the specs in this order:
+
+1. [parser-spec.md](parser-spec.md): supported Gherkin syntax, parser behavior,
+   and canonical JSON IR.
+2. [ir-dry-checker-spec.md](ir-dry-checker-spec.md): report-only repeated,
+   near-duplicate, and possible-synonym step analysis used to normalize and
+   prune feature-file Gherkin.
+3. [acceptance-generator.md](acceptance-generator.md): entrypoint generator
+   command, generated test requirements, runtime contract, step handler
+   contract, generated metadata, and implementation hash rules.
+4. [mutator-spec.md](mutator-spec.md): mutator command, mutation rules,
+   persistent runner-worker protocol, differential manifests, status reporting,
+   result classification, and report formats.
+
+## Command Entry Points
+
+A conforming setup should prefer these command shapes:
+
+```text
+dotnet run scripts/gherkin-parser.cs -- <feature-file> <json-output>
+dotnet run scripts/gherkin-ir-dry-checker.cs -- [--include-exact] <json-ir> <report-output>
+acceptance-entrypoint-generator <json-ir> <generated-test-output>
+dotnet run scripts/gherkin-mutator.cs -- [options]
+```
+
+Common generated paths are:
+
+```text
+features/
+build/acceptance/
+build/acceptance-mutation/
+acceptance/generated/
+```
+
+The exact project test command, generated test extension, runtime, handlers, and
+adapter are project-specific.
+
+## Gherkin IR DRY Checker
+
+APS includes `scripts/gherkin-ir-dry-checker.cs`, a report-only tool that
+analyzes parser-produced JSON IR for duplicated or similar step text. Its
+purpose is to help agents normalize and prune the Gherkin in feature files
+before generated tests are created.
+
+Run it after parsing newly written or changed feature files and before
+generating acceptance tests:
+
+```text
+dotnet run scripts/gherkin-parser.cs -- features/example.feature build/acceptance/ir/example.json
+dotnet run scripts/gherkin-ir-dry-checker.cs -- build/acceptance/ir/example.json build/acceptance/dry/example.json
+```
+
+The checker does not rewrite feature files, IR, generated tests, runtimes, or
+project implementation files. It produces an advisory JSON report. Use that
+report to edit feature files when the same idea is expressed unnecessarily in
+different ways or when repeated steps inside one scenario should be pruned.
+
+Typical workflow:
+
+1. Parse each `.feature` file into JSON IR with `scripts/gherkin-parser.cs`.
+2. Run `scripts/gherkin-ir-dry-checker.cs` on each IR file.
+3. Review findings such as `duplicate-in-scenario`, `placeholder-variant`,
+   `near-duplicate`, and `possible-synonym`.
+4. Normalize Gherkin wording where the different forms are accidental drift.
+5. Prune accidental repeated steps inside a background or scenario.
+6. Parse, check, generate, and run the acceptance tests.
+
+Do not blindly merge steps only because they look similar. Some step texts have
+the same shape but different setup or assertion semantics.
+
+## Typical Installation Flow
+
+When installing the pipeline in a project, an agent usually:
+
+1. Creates one or more feature files that exercise real project behavior.
+2. Parses each feature into JSON IR with `scripts/gherkin-parser.cs`.
+3. Optionally runs `scripts/gherkin-ir-dry-checker.cs` on each IR and uses the
+   report to normalize and prune feature-file Gherkin.
+4. Creates project-specific generated entry points from each IR.
+5. Implements the runtime and step handlers needed by those generated tests.
+6. Adds a normal acceptance script that parses, generates, and runs the
+   generated tests.
+7. Adds a runner adapter that can stay hot and accept mutation jobs over
+   stdin/stdout.
+8. Runs `scripts/gherkin-mutator.cs` and improves scenarios or handlers until
+   important mutations are killed.
+9. Adds parser, generator, runtime, handler, adapter, and mutator coverage at
+   the project-appropriate level.
+
+Normal acceptance should be part of regular verification. Acceptance mutation is
+usually a deliberate quality workflow because it may be slower than normal test
+runs.
